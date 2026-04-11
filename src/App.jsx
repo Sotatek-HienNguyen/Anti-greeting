@@ -1,1 +1,41 @@
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';\nimport Home from './pages/Home';\nimport Lesson from './pages/Lesson';\nimport Writing from './pages/Writing';\n\nfunction Navbar() {\n  const location = useLocation();\n  \n  return (\n    <nav style={{\n      display: 'flex', \n      justifyContent: 'center', \n      gap: '2rem', \n      padding: '2rem', \n      position: 'sticky', \n      top: 0,\n      zIndex: 100,\n      background: 'rgba(1, 4, 9, 0.8)',\n      backdropFilter: 'blur(10px)'\n    }}>\n      <Link to=\"/\" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>Home</Link>\n      <Link to=\"/lesson\" className={`nav-link ${location.pathname === '/lesson' ? 'active' : ''}`}>Vocabulary</Link>\n      <Link to=\"/writing\" className={`nav-link ${location.pathname === '/writing' ? 'active' : ''}`}>Writing Mode</Link>\n    </nav>\n  );\n}\n\nfunction App() {\n  return (\n    <Router>\n      <Navbar />\n      <main style={{ padding: '2rem', flex: 1 }}>\n        <Routes>\n          <Route path=\"/\" element={<Home />} />\n          <Route path=\"/lesson\" element={<Lesson />} />\n          <Route path=\"/writing\" element={<Writing />} />\n        </Routes>\n      </main>\n      <footer style={{ textAlign: 'center', padding: '3rem', color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem' }}>\n        &copy; 2026 Anti-greeting. Empowering English Learners Everywhere.\n      </footer>\n    </Router>\n  );\n}\n\nexport default App;\n
+import { Routes, Route, Link } from 'react-router-dom';
+import Home from './pages/Home';
+import Lesson from './pages/Lesson';
+import Writing from './pages/Writing';
+import Shadowing from './pages/Shadowing';
+
+function App() {
+  return (
+    <>
+      <nav className="navbar">
+        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Link to="/" className="logo">
+            <span style={{ fontSize: '1.8rem' }}>🗣️</span> Fluent
+          </Link>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <Link to="/lesson" className="btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+              Bài học
+            </Link>
+            <Link to="/writing" className="btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+              Luyện dịch
+            </Link>
+            <Link to="/shadowing" className="btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+              Shadowing
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      <main className="container" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/lesson" element={<Lesson />} />
+          <Route path="/writing" element={<Writing />} />
+          <Route path="/shadowing" element={<Shadowing />} />
+        </Routes>
+      </main>
+    </>
+  );
+}
+
+export default App;

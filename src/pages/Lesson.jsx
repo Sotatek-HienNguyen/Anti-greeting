@@ -1,1 +1,62 @@
-import { useState, useMemo } from 'react';\nimport Flashcard from '../components/Flashcard';\nimport ALL_WORDS from '../data/words.json';\n\n// L\u1ea5y ng\u1eabu nhi\u00ean v\u00e0i t\u1eeb ho\u1eb7c c\u1ed1 \u0111\u1ecbnh. \u1ede \u0111\u00e2y m\u00ecnh t\u1ea1o m\u1ed9t m\u1ea3ng random 10 t\u1eeb h\u1ecdc m\u1ed7i ng\u00e0y.\nfunction getRandomWords(list, num) {\n  const shuffled = [...list].sort(() => 0.5 - Math.random());\n  return shuffled.slice(0, num);\n}\n\nexport default function Lesson() {\n  // Fix daily list on mount\n  const dailyWords = useMemo(() => getRandomWords(ALL_WORDS, 10), []);\n  \n  const [currentIndex, setCurrentIndex] = useState(0);\n\n  const handleNext = () => {\n    if (currentIndex < dailyWords.length - 1) {\n      setCurrentIndex(currentIndex + 1);\n    }\n  };\n\n  const handlePrev = () => {\n    if (currentIndex > 0) {\n      setCurrentIndex(currentIndex - 1);\n    }\n  };\n\n  const currentWordStr = dailyWords[currentIndex];\n\n  return (\n    <div className=\"page-enter-active\" style={{ maxWidth: '600px', margin: '0 auto' }}>\n      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>\n        <h2 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Oxford 3000 Vocabulary</h2>\n        <p style={{ color: 'rgba(255,255,255,0.7)' }}>\n          T\u1eeb v\u1ef1ng {currentIndex + 1} / {dailyWords.length} (Random Daily Batch)\n        </p>\n      </div>\n\n      <Flashcard key={currentWordStr} wordString={currentWordStr} />\n\n      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}>\n        <button \n          onClick={handlePrev} \n          disabled={currentIndex === 0}\n          className=\"btn-secondary\"\n          style={{ opacity: currentIndex === 0 ? 0.5 : 1 }}\n        >\n           &larr; Quay l\u1ea1i\n        </button>\n        <button \n          onClick={handleNext} \n          disabled={currentIndex === dailyWords.length - 1}\n          className=\"btn-primary\"\n          style={{ opacity: currentIndex === dailyWords.length - 1 ? 0.5 : 1 }}\n        >\n          {currentIndex === dailyWords.length - 1 ? 'Ho\u00e0n th\u00e0nh' : 'Ti\u1ebfp theo \\u2192'}\n        </button>\n      </div>\n    </div>\n  );\n}\n
+import { useState, useMemo } from 'react';
+import Flashcard from '../components/Flashcard';
+import ALL_WORDS from '../data/words.json';
+
+// Lấy ngẫu nhiên vài từ hoặc cố định. Ở đây mình tạo một mảng random 10 từ học mỗi ngày.
+function getRandomWords(list, num) {
+  const shuffled = [...list].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, num);
+}
+
+export default function Lesson() {
+  // Fix daily list on mount
+  const dailyWords = useMemo(() => getRandomWords(ALL_WORDS, 10), []);
+  
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handleNext = () => {
+    if (currentIndex < dailyWords.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
+
+  const currentWordStr = dailyWords[currentIndex];
+
+  return (
+    <div className="page-enter-active" style={{ maxWidth: '600px', margin: '0 auto' }}>
+      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <h2 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Oxford 3000 Vocabulary</h2>
+        <p style={{ color: 'rgba(255,255,255,0.7)' }}>
+          Từ vựng {currentIndex + 1} / {dailyWords.length} (Random Daily Batch)
+        </p>
+      </div>
+
+      <Flashcard key={currentWordStr} wordString={currentWordStr} />
+
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}>
+        <button 
+          onClick={handlePrev} 
+          disabled={currentIndex === 0}
+          className="btn-secondary"
+          style={{ opacity: currentIndex === 0 ? 0.5 : 1 }}
+        >
+           &larr; Quay lại
+        </button>
+        <button 
+          onClick={handleNext} 
+          disabled={currentIndex === dailyWords.length - 1}
+          className="btn-primary"
+          style={{ opacity: currentIndex === dailyWords.length - 1 ? 0.5 : 1 }}
+        >
+          {currentIndex === dailyWords.length - 1 ? 'Hoàn thành' : 'Tiếp theo \u2192'}
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -1,1 +1,153 @@
-import { useState, useEffect } from 'react';\nimport VideoContext from './VideoContext';\n\nexport default function Flashcard({ wordString }) {\n  const [data, setData] = useState(null);\n  const [loading, setLoading] = useState(true);\n  const [isFlipped, setIsFlipped] = useState(false);\n  const [error, setError] = useState(null);\n\n  useEffect(() => {\n    setLoading(true);\n    setError(null);\n    setIsFlipped(false);\n\n    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${wordString}`)\n      .then(res => {\n        if (!res.ok) throw new Error('Word not found');\n        return res.json();\n      })\n      .then(json => {\n        setData(json[0]);\n        setLoading(false);\n      })\n      .catch(err => {\n        setError(err.message);\n        setLoading(false);\n      });\n  }, [wordString]);\n\n  const playAudio = () => {\n    if (!data) return;\n    const audioSrc = data.phonetics.find(p => p.audio)?.audio;\n    if (audioSrc) {\n      new Audio(audioSrc).play();\n    }\n  };\n\n  if (loading) return <div className=\"glass-card\" style={{ padding: '4rem', textAlign: 'center' }}>\ud83e\uddea \u0110ang t\u1ea3i d\u1eef li\u1ec7u...</div>;\n  if (error) return <div className=\"glass-card\" style={{ padding: '4rem', textAlign: 'center', color: '#ef4444' }}>\ud83d\udeab Kh\u00f4ng t\u00ecm th\u1ea5y t\u1eeb v\u1ef1ng n\u00e0y.</div>;\n\n  return (\n    <div style={{ perspective: '1000px' }}>\n      <div \n        className=\"glass-card\" \n        style={{ \n          minHeight: '350px', \n          position: 'relative', \n          cursor: 'pointer',\n          transformStyle: 'preserve-3d',\n          transition: 'transform 0.6s',\n          transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0)'\n        }}\n        onClick={() => setIsFlipped(!isFlipped)}\n      >\n        {/* Front Side */}\n        <div style={{ \n          position: 'absolute', \n          width: '100%', \n          height: '100%', \n          backfaceVisibility: 'hidden', \n          display: 'flex', \n          flexDirection: 'column', \n          alignItems: 'center', \n          justifyContent: 'center', \n          padding: '2rem' \n        }}>\n          <span style={{ fontSize: '4rem', fontWeight: '800', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>{data.word}</span>\n          <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.2rem', marginBottom: '1.5rem' }}>{data.phonetic}</span>\n          <button \n            className=\"btn-secondary\" \n            style={{ borderRadius: '50%', width: '60px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}\n            onClick={(e) => { e.stopPropagation(); playAudio(); }}\n          >\n             <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" strokeWidth=\"2\"><polygon points=\"11 5 6 9 2 9 2 15 6 15 11 19 11 5\"/><path d=\"M15.54 8.46a5 5 0 0 1 0 7.07\"/><path d=\"M19.07 4.93a10 10 0 0 1 0 14.14\"/></svg>\n          </button>\n          <p style={{ marginTop: '2rem', fontSize: '0.9rem', color: 'rgba(255,255,255,0.3)' }}>(B\u1ea5m v\u00e0o th\u1ebb \u0111\u1ec3 xem gi\u1ea3i ngh\u0129a)</p>\n        </div>\n\n        {/* Back Side */}\n        <div style={{ \n          position: 'absolute', \n          width: '100%', \n          height: '100%', \n          backfaceVisibility: 'hidden', \n          transform: 'rotateY(180deg)',\n          padding: '2rem', \n          overflowY: 'auto'\n        }}>\n          <h3 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Meanings & Examples</h3>\n          {data.meanings.map((m, i) => (\n            <div key={i} style={{ marginBottom: '1.5rem' }}>\n              <p style={{ fontWeight: '600', color: '#10B981', textTransform: 'uppercase', fontSize: '0.8rem' }}>{m.partOfSpeech}</p>\n              <p style={{ margin: '0.3rem 0', fontSize: '1.1rem' }}>{m.definitions[0].definition}</p>\n              {m.definitions[0].example && (\n                <p style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.6)', borderLeft: '3px solid rgba(255,255,255,0.1)', paddingLeft: '0.8rem', marginTop: '0.5rem' }}>\n                  \"{m.definitions[0].example}\"\n                </p>\n              )}\n            </div>\n          ))}\n        </div>\n      </div>\n      \n      <VideoContext word={data.word} />\n    </div>\n  );\n}\n
+import { useState, useEffect } from 'react';
+import VideoContext from './VideoContext';
+
+export default function Flashcard({ wordString }) {
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    
+    // Fetch real definition from free dictionary API
+    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(wordString)}`)
+      .then(res => {
+        if (!res.ok) throw new Error('Not found');
+        return res.json();
+      })
+      .then(json => {
+        if (isMounted && json && json.length > 0) {
+          const entry = json[0];
+          // Extract the first meaningful phonetics if available
+          let phonetic = '';
+          let audioUrl = '';
+          if (entry.phonetics) {
+            const pText = entry.phonetics.find(p => p.text);
+            phonetic = pText ? pText.text : entry.phonetic || '';
+            
+            const usPhonetic = entry.phonetics.find(p => p.audio && p.audio.includes('-us.mp3'));
+            if (usPhonetic) {
+               audioUrl = usPhonetic.audio;
+            } else {
+               const anyPhonetic = entry.phonetics.find(p => p.audio);
+               if (anyPhonetic) audioUrl = anyPhonetic.audio;
+            }
+          }
+          
+          let partOfSpeech = '';
+          let definition = '';
+          let example = '';
+          
+          if (entry.meanings && entry.meanings.length > 0) {
+            partOfSpeech = entry.meanings[0].partOfSpeech || '';
+            if (entry.meanings[0].definitions && entry.meanings[0].definitions.length > 0) {
+               definition = entry.meanings[0].definitions[0].definition;
+               example = entry.meanings[0].definitions[0].example || '';
+            }
+          }
+          
+          setData({
+            word: entry.word,
+            phonetic,
+            partOfSpeech,
+            definition,
+            example,
+            audio: audioUrl
+          });
+        }
+      })
+      .catch((err) => {
+        if (isMounted) {
+            console.error("Dictionary API error for word:", wordString, err);
+            // Fallback for words not found in dictionary
+            setData({
+                word: wordString,
+                phonetic: '',
+                partOfSpeech: 'unknown',
+                definition: 'No definition found in the dictionary.',
+                example: '',
+                audio: ''
+            });
+        }
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => { isMounted = false; };
+  }, [wordString]);
+
+  // Audio Play Effect
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Press 'R' to play audio
+      if ((e.key === 'r' || e.key === 'R') && data && data.audio) {
+        const audio = new Audio(data.audio);
+        audio.play().catch(err => console.error("Audio play failed:", err));
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [data]);
+
+  if (loading) {
+    return (
+      <div className="flashcard-container">
+        <div className="flashcard" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div className="glass-card" style={{ padding: '2rem', border: 'none', background: 'transparent' }}>
+             <p className="text-main-invert animate-float">⏳ Đang tải từ vựng...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) return null;
+
+  return (
+    <>
+      {isVideoOpen && <VideoContext word={data.word} onClose={() => setIsVideoOpen(false)} />}
+      <div className="flashcard-container">
+        <div className={`flashcard ${isFlipped ? 'flipped' : ''}`}>
+        
+        {/* Front Side */}
+        <div className="flashcard-face flashcard-front text-main-invert" onClick={() => setIsFlipped(true)}>
+          <div className="word-main" style={{ textTransform: 'capitalize' }}>{data.word}</div>
+          {data.partOfSpeech && <div className="word-type">({data.partOfSpeech})</div>}
+          {data.phonetic && (
+              <div className="word-pronunciation" style={{ marginTop: '1rem' }}>
+                {data.phonetic}
+              </div>
+          )}
+          <div style={{ marginTop: '2rem', fontSize: '0.9rem', color: '#6B7280' }}>
+            Nhấp để lật<br/>
+            {data.audio ? <span style={{ color: '#10B981' }}>(Nhấn phím <b>R</b> để nghe)</span> : '(Không có audio cho từ này)'}
+          </div>
+        </div>
+
+        {/* Back Side */}
+        <div className="flashcard-face flashcard-back text-main-invert" onClick={(e) => {
+           // Prevent flip if clicking on the video button
+           if (e.target.closest('button')) return;
+           setIsFlipped(false);
+        }}>
+          <div className="word-meaning" style={{ fontSize: '1.2rem' }}>{data.definition}</div>
+          {data.example && <div className="word-example" style={{ marginTop: '0.5rem' }}>"{data.example}"</div>}
+          
+          <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+            <button className="btn-primary" onClick={() => setIsVideoOpen(true)} style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>
+              🎬 Xem ngữ cảnh thực tế (Video)
+            </button>
+            <div style={{ fontSize: '0.9rem', color: '#6B7280' }}>
+              Nhấp vùng trống để quay lại
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    </>
+  );
+}

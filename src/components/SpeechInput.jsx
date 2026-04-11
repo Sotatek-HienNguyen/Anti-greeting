@@ -1,1 +1,70 @@
-import { useState, useEffect, useRef } from 'react';\n\nconst SpeechInput = ({ onFinalTranscript, placeholder, autoFocus }) => {\n  const [isListening, setIsListening] = useState(false);\n  const [interimTranscript, setInterimTranscript] = useState('');\n  const recognitionRef = useRef(null);\n  const [supported, setSupported] = useState(true);\n\n  useEffect(() => {\n    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;\n    if (!SpeechRecognition) {\n      setSupported(false);\n      return;\n    }\n\n    const recognition = new SpeechRecognition();\n    recognition.continuous = true;\n    recognition.interimResults = true;\n    recognition.lang = 'en-US';\n\n    recognition.onresult = (event) => {\n      let final = '';\n      let interim = '';\n      for (let i = event.resultIndex; i < event.results.length; ++i) {\n        if (event.results[i].isFinal) {\n          final += event.results[i][0].transcript;\n        } else {\n          interim += event.results[i][0].transcript;\n        }\n      }\n      if (final) {\n        onFinalTranscript(final);\n      }\n      setInterimTranscript(interim);\n    };\n\n    recognition.onend = () => {\n      setIsListening(false);\n      setInterimTranscript('');\n    };\n\n    recognitionRef.current = recognition;\n  }, [onFinalTranscript]);\n\n  const toggleListening = () => {\n    if (isListening) {\n      recognitionRef.current.stop();\n    } else {\n      recognitionRef.current.start();\n      setIsListening(true);\n    }\n  };\n\n  if (!supported) return <p style={{ color: '#ef4444' }}>Tr\u00ecnh duy\u1ec7t kh\u00f4ng h\u1ed7 tr\u1ee3 Speech Recognition.</p>;\n\n  return (\n    <div className=\"glass-card\" style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>\n      <button \n        onClick={toggleListening}\n        className={`btn-${isListening ? 'secondary' : 'primary'}`}\n        style={{ \n           width: '50px', \n           height: '50px', \n           borderRadius: '50%', \n           display: 'flex', \n           alignItems: 'center', \n           justifyContent: 'center',\n           border: isListening ? '2px solid #ef4444' : 'none'\n        }}\n      >\n        {isListening ? (\n           <div className=\"animate-pulse\" style={{ width: '15px', height: '15px', background: '#ef4444', borderRadius: '50%' }}></div>\n        ) : (\n           <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" strokeWidth=\"2\" strokeLinecap=\"round\" strokeLinejoin=\"round\"><path d=\"M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z\"/><path d=\"M19 10v2a7 7 0 0 1-14 0v-2\"/><line x1=\"12\" x2=\"12\" y1=\"19\" y2=\"22\"/></svg>\n        )}\n      </button>\n      <div style={{ flex: 1 }}>\n         {interimTranscript ? (\n            <span style={{ color: 'rgba(255,255,255,0.7)', fontStyle: 'italic' }}>{interimTranscript}</span>\n         ) : (\n            <span style={{ color: 'rgba(255,255,255,0.4)' }}>{placeholder || \"Click mic to speak...\"}</span>\n         )}\n      </div>\n    </div>\n  );\n};\n\nexport default SpeechInput;\n
+import { useState, useRef } from 'react';
+
+export default function SpeechInput({ onAppend }) {
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef(null);
+
+  const toggleRecording = () => {
+    if (isRecording) {
+      if (recognitionRef.current) recognitionRef.current.stop();
+      setIsRecording(false);
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Trình duyệt của bạn không hỗ trợ Web Speech API. Vui lòng sử dụng Chrome hoặc Edge.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false; // we only want final results
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setIsRecording(true);
+    
+    recognition.onresult = (event) => {
+      const speechResult = event.results[0][0].transcript;
+      // Trả kết quả về
+      onAppend(speechResult);
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error", event.error);
+      setIsRecording(false);
+    };
+    
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+
+    recognition.start();
+    recognitionRef.current = recognition;
+  };
+
+  return (
+    <button 
+      type="button" 
+      onClick={toggleRecording}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        padding: '0.5rem 1rem',
+        borderRadius: '8px',
+        border: '1px solid',
+        borderColor: isRecording ? '#EF4444' : 'rgba(255,255,255,0.2)',
+        backgroundColor: isRecording ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255,255,255,0.05)',
+        color: isRecording ? '#FCA5A5' : '#E5E7EB',
+        cursor: 'pointer',
+        transition: 'all 0.3s'
+      }}
+    >
+      <span className={isRecording ? 'animate-pulse' : ''} style={{ fontSize: '1.2rem' }}>
+        {isRecording ? '🔴' : '🎤'}
+      </span>
+      {isRecording ? 'Đang nghe...' : 'Nói để nhập'}
+    </button>
+  );
+}
