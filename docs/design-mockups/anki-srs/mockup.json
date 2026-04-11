@@ -1,0 +1,16 @@
+{
+  "name": "anki-srs",
+  "description": "Advanced English SRS feature inspired by Lexical Atelier",
+  "created": "2026-04-11",
+  "updated": "2026-04-11",
+  "themes": ["light"],
+  "pages": [
+    {
+      "file": "index.html",
+      "title": "Lexical Atelier - Study Mode",
+      "description": "The unified layout for SRS Flashcards (Front & Back toggled by AlpineJS).",
+      "navOrder": 1
+    }
+  ],
+  "navigation": {}
+}
