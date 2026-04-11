@@ -14,8 +14,9 @@ This roadmap documents completed milestones and tracks upcoming feature goals fo
 - [x] Create Writing practice logic with Dictation.
 - [x] Integrate basic Semantic Scoring evaluation.
 - [x] Build contextual video frame embedding using YouGlish iframe API.
-- [ ] Refactor `Writing.jsx` to meet the < 200 line limit standard.
-- [ ] Build global navigation / topbar header for moving seamlessly between Lesson / Writing / Video modules.
+- [x] Implement YouTube Shadowing Studio with segmenting and recording.
+- [ ] Refactor `Shadowing.jsx` and `Writing.jsx` to meet the < 200 line limit standard.
+- [ ] Build global navigation / topbar header for moving seamlessly between Lesson / Writing / Shadowing / Video modules.
 
 ## Phase 3: Progress & Persistence (Upcoming)
 - [ ] Implement `localStorage` to save user's daily word batch so a page refresh doesn't reset today's lesson.

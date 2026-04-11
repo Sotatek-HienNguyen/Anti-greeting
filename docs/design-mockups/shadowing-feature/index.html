@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Video - Shadowing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            500: '#4F46E5',
+                            600: '#4338CA',
+                        },
+                        secondary: {
+                            500: '#10B981',
+                        },
+                        background: {
+                            main: '#0f172a',
+                            accent: '#1e1b4b',
+                        }
+                    },
+                    fontFamily: {
+                        heading: ['Outfit', 'sans-serif'],
+                        body: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            min-height: 100vh;
+            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center p-6">
+
+    <div class="max-w-2xl w-full space-y-8 text-center" x-data="{ url: '' }">
+        <div class="space-y-4">
+            <h1 class="font-heading text-5xl font-bold tracking-tight">
+                Shadowing <span class="text-secondary-500">Mastery</span>
+            </h1>
+            <p class="text-gray-400 text-lg">
+                Enter a YouTube URL to start your 100-repetition speaking journey.
+            </p>
+        </div>
+
+        <div class="glass-card p-8 rounded-3xl shadow-2xl relative overflow-hidden group">
+            <div class="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div class="relative space-y-6">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        x-model="url"
+                        placeholder="https://www.youtube.com/watch?v=..." 
+                        class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 pl-14 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all text-lg"
+                    >
+                    <div class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+                    </div>
+                </div>
+
+                <a 
+                    :href="url ? 'shadowing.html' : '#'"
+                    class="block w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-5 rounded-2xl transition-all shadow-lg shadow-primary-500/25 active:scale-[0.98] cursor-pointer"
+                    :class="!url && 'opacity-50 cursor-not-allowed'"
+                >
+                    🚀 Start Session
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-6 pt-8">
+            <template x-for="stat in [
+                { label: 'Words Mastered', val: '452', color: 'text-secondary-500' },
+                { label: 'Total Reps', val: '12.4k', color: 'text-primary-500' },
+                { label: 'Daily Streak', val: '14 days', color: 'text-orange-500' }
+            ]">
+                <div class="glass-card p-4 rounded-2xl">
+                    <div class="text-sm text-gray-500" x-text="stat.label"></div>
+                    <div class="text-xl font-bold font-heading mt-1" :class="stat.color" x-text="stat.val"></div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+</body>
+</html>

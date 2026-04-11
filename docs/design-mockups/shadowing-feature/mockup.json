@@ -1,0 +1,25 @@
+{
+  "name": "shadowing-feature",
+  "description": "YouTube Shadowing tool flow with video selection and 100-rep challenge interface.",
+  "created": "2026-04-10",
+  "updated": "2026-04-10",
+  "themes": ["dark"],
+  "pages": [
+    {
+      "file": "index.html",
+      "title": "Select Video",
+      "description": "User enters YouTube URL to start shadowing session.",
+      "navOrder": 1
+    },
+    {
+      "file": "shadowing.html",
+      "title": "Shadowing Session",
+      "description": "Main split-view interface with video playback, transcript, and 100-rep counter.",
+      "navOrder": 2
+    }
+  ],
+  "navigation": {
+    "index.html": ["shadowing.html"],
+    "shadowing.html": ["index.html"]
+  }
+}

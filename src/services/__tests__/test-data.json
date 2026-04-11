@@ -1,0 +1,17 @@
+[
+  {
+    "id": "test-1",
+    "vn": "Chào buổi sáng, bạn khỏe không?",
+    "en": ["Good morning, how are you?", "Morning, how's it going?"]
+  },
+  {
+    "id": "test-2",
+    "vn": "Tôi đang học tiếng Anh.",
+    "en": ["I am learning English.", "I'm studying English."]
+  },
+  {
+    "id": "test-3",
+    "vn": "Thời tiết hôm nay thế nào?",
+    "en": ["How is the weather today?", "What is the weather like today?"]
+  }
+]

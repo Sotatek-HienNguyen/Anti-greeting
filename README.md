@@ -6,7 +6,8 @@ A high-quality, interactive web application focused on learning conversational E
 
 *   **Intelligent Flashcards**: Daily randomized batches (10 words) of Oxford 3000 vocabulary.
 *   **Audio & Definitions**: Integration with Free Dictionary API for US-accent pronunciation and detailed meanings.
-*   **Speech-to-Text Practice**: Immersive writing/speaking practice utilizing Web Speech Recognition capability.
+*   **Writing & Dictation**: Immersive writing/speaking practice utilizing Web Speech Recognition capability.
+*   **Shadowing Studio**: YouTube-based segmenting tool for active listening and voice recording practice with local persistence.
 *   **Semantic Scoring**: Advanced evaluation to score user translations against intended answers.
 *   **Video Context**: YouGlish integration to see how words are used naturally by native speakers.
 

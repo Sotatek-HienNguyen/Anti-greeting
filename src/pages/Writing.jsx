@@ -8,6 +8,7 @@ export default function Writing() {
   const [answers, setAnswers] = useState({}); // { [id]: "answer string" }
   const [currentIndex, setCurrentIndex] = useState(0);
   const [resultsData, setResultsData] = useState(null);
+  const [error, setError] = useState('');
 
   const handleStart = async () => {
     setAppState('submitting');
@@ -17,6 +18,7 @@ export default function Writing() {
       setAnswers({});
       setCurrentIndex(0);
       setAppState('playing');
+      setError('');
     } catch(err) {
        console.error("Failed to start session", err);
        setAppState('init');
@@ -24,11 +26,13 @@ export default function Writing() {
   };
 
   const handleAnswerChange = (text) => {
+     setError('');
      const id = sessionData.questions[currentIndex].id;
      setAnswers(prev => ({ ...prev, [id]: text }));
   };
 
   const handleSpeechAppend = (text) => {
+     setError('');
      const id = sessionData.questions[currentIndex].id;
      setAnswers(prev => {
         const existing = prev[id] || "";
@@ -38,18 +42,31 @@ export default function Writing() {
   };
 
   const handleNext = () => {
+     const currentId = sessionData.questions[currentIndex].id;
+     if (!answers[currentId] || answers[currentId].trim() === "") {
+        setError('Vui lòng nhập câu trả lời');
+        return;
+     }
      if (currentIndex < sessionData.questions.length - 1) {
        setCurrentIndex(prev => prev + 1);
+       setError('');
      }
   };
 
   const handlePrev = () => {
      if (currentIndex > 0) {
        setCurrentIndex(prev => prev - 1);
+       setError('');
      }
   };
 
   const handleSubmit = async () => {
+     const currentId = sessionData.questions[currentIndex].id;
+     if (!answers[currentId] || answers[currentId].trim() === "") {
+        setError('Vui lòng nhập câu trả lời');
+        return;
+     }
+
      setAppState('submitting');
      const payload = sessionData.questions.map(q => ({
         id: q.id,
@@ -60,6 +77,7 @@ export default function Writing() {
        const res = await submitWritingSession(payload);
        setResultsData(res);
        setAppState('results');
+       setError('');
      } catch(err) {
        console.error("Submit error", err);
        setAppState('playing'); // revert
@@ -133,12 +151,16 @@ export default function Writing() {
                       borderRadius: '8px',
                       backgroundColor: 'rgba(255,255,255,0.1)',
                       color: 'white',
-                      border: '1px solid rgba(255,255,255,0.2)',
+                      border: error ? '1px solid #EF4444' : '1px solid rgba(255,255,255,0.2)',
                       fontSize: '1.2rem',
                       fontFamily: 'inherit',
-                      resize: 'vertical'
+                      resize: 'vertical',
+                      outline: 'none'
                    }}
                  />
+                 {error && <div className="shake-animation" style={{ color: '#EF4444', fontSize: '1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <span>⚠️</span> {error}
+                 </div>}
                  <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '0.5rem' }}>
                     <SpeechInput onAppend={handleSpeechAppend} />
                     <button 

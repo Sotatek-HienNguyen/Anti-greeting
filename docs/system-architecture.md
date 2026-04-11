@@ -12,31 +12,39 @@ graph TD
     
     subgraph Frontend [React Application]
         Router[React Router]
-        Pages(Pages: Home, Lesson, Writing)
-        Components(Components: Flashcard, SpeechInput, VideoContext)
+        Pages(Pages: Home, Lesson, Writing, Shadowing)
+        Components(Components: Flashcard, SpeechInput, VideoContext, ShadowingPlayer)
         Services(Services: api.js)
         Data(Static Assets: words.json)
+        Store(LocalStorage: Shadows)
         
         Router --> Pages
         Pages --> Components
         Pages --> Data
+        Pages --> Store
         Components -.-> Services
     end
 
     subgraph External Connections
         Services --> API_Dictionary[Free Dictionary API]
         Components --> API_Speech[Web SpeechRecognition API]
+        Components --> API_YouTube[YouTube IFrame API]
         Components --> API_YouGlish[YouGlish Embed]
     end
 ```
 
 ## 3. Component Breakdown
 
-*   **Routing Layer**: React Router dictates module switching: Landing `/`, Flashcard Module `/lesson`, Dictation Practice `/writing`.
+*   **Routing Layer**: React Router dictates module switching: Landing `/`, Flashcard Module `/lesson`, Dictation Practice `/writing`, Shadowing Studio `/shadowing`.
 *   **Static Data Pool**: `src/data/words.json` contains a flat array of string literals (Oxford 3k words). The `Lesson.jsx` page picks a random subset on instantiation.
-*   **External Integration Layer (`api.js`)**: Encapsulates `fetch()` logic for the dictionary payload, exposing standardized `getWordDetails(word)` methods that strip the highly nested Free Dictionary JSON down to parts-of-speech, definition strings, and audio URLs.
-*   **Native Hardware Integration**: `SpeechInput.jsx` bridges the `SpeechRecognition` constructor, controlling microphone hardware toggle states and piping string transcripts up to the `Writing.jsx` parent for scoring calculations.
+*   **External Integration Layer (`api.js`)**: Encapsulates `fetch()` logic for the dictionary payload.
+*   **Shadowing & Playback Layer**: `ShadowingPlayer.jsx` implements the YouTube IFrame Player API using a custom `forwardRef` pattern to allow imperative video control (seeking, state polling).
+*   **Native Hardware Integration**: `SpeechInput.jsx` bridges the `SpeechRecognition` constructor, and `Shadowing.jsx` utilizes the `MediaRecorder` API for voice capture.
 
-## 4. Future Architecture Considerations
+## 4. State Management & Persistence
+
+The application currently uses a decentralized state model:
+*   **Ephemeral State**: Lessons and Writing sessions are session-based (lost on refresh).
+*   **Persistent State**: Shadowing segments, recording counts, and transcriptions are saved to `localStorage` keyed by YouTube `videoId`. This ensures users can return to a specific video and continue their practice.
 
 Currently, progress state (like "Day 1 Complete" or "Score History") is not preserved. Integrating `localStorage` state hooks or adding a lightweight Backend-as-a-Service (like Firebase/Supabase) is the logical next step for User Authentication and progress tracking.

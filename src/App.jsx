@@ -2,6 +2,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import Lesson from './pages/Lesson';
 import Writing from './pages/Writing';
+import Shadowing from './pages/Shadowing';
 
 function App() {
   return (
@@ -18,6 +19,9 @@ function App() {
             <Link to="/writing" className="btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
               Luyện dịch
             </Link>
+            <Link to="/shadowing" className="btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+              Shadowing
+            </Link>
           </div>
         </div>
       </nav>
@@ -27,6 +31,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/lesson" element={<Lesson />} />
           <Route path="/writing" element={<Writing />} />
+          <Route path="/shadowing" element={<Shadowing />} />
         </Routes>
       </main>
     </>

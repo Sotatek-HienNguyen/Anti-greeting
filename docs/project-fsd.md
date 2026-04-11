@@ -39,9 +39,19 @@
 
 | ID | Requirement | Priority | Status |
 |----|------------|----------|--------|
-| FR-VID-001 | Display embedded YouGlish video for specific vocabulary words | Medium | Draft/Implemented |
+| FR-VID-001 | Display embedded YouGlish video for specific vocabulary words | Medium | Implemented |
 
-**Use Case References**: [docs/usecases/video/](../../../docs/usecases/video/)
+### Shadowing Studio
+
+**Description**: High-fidelity YouTube segmenting and dictation tool for active listening and speaking practice.
+
+| ID | Requirement | Priority | Status |
+|----|------------|----------|--------|
+| FR-SHA-001 | Create dynamic 5-second video segments from current timestamp | High | Implemented |
+| FR-SHA-002 | Integrated dictation area for per-segment transcription | High | Implemented |
+| FR-SHA-003 | Audio recording with instant session playback | High | Implemented |
+| FR-SHA-004 | Smart hotkeys (Space, Cmd+S for Skip/Add, Cmd+R) | Medium | Implemented |
+| FR-SHA-005 | Video-specific progress persistence using LocalStorage | High | Implemented |
 
 ---
 
@@ -65,6 +75,12 @@
 - **Interactive Elements**: Microphone start/stop toggle, submit button.
 - **States**: Idle, Listening for audio, processing/scoring, displaying result.
 
+### Shadowing Screen
+- **Purpose**: Interactive studio for active listening and voice mimicry.
+- **Layout**: Split view: YouTube player (Left) and Segmented Transcript Builder (Right).
+- **Interactive Elements**: Trimmer button, Dictation textareas, Record/Play buttons, Auto-play toggle.
+- **States**: Video input mode, Active practice mode (with segment-specific recording and sub-second seeking).
+
 ## 3. Screen Flows
 
 ```mermaid
@@ -74,8 +90,12 @@ flowchart TD
     C -->|Next/Prev| D[Cycle Words]
     C -->|Click Flashcard| E[Fetch & Play Audio/Definitions]
     A -->|Navigate Sidebar| F[Writing Screen]
+    A -->|Navigate Sidebar| I[Shadowing Screen]
     F -->|Start Mic| G[Dictate Translation]
     G -->|Stop Mic| H[Show Score]
+    I -->|Enter URL| J[Create Segments]
+    J -->|Cmd+S| K[Smart Skip/Add Loop]
+    K -->|Cmd+R| L[Voice Recording]
 ```
 
 ## 5. Data Models

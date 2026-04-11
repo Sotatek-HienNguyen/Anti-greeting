@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadowing Session - Anti-greeting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 500: '#4F46E5', 600: '#4338CA' },
+                        secondary: { 500: '#10B981' },
+                        background: { main: '#0f172a', accent: '#1e1b4b' }
+                    },
+                    fontFamily: {
+                        heading: ['Outfit', 'sans-serif'],
+                        body: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        [x-cloak] { display: none !important; }
+        body {
+            background: #0f172a;
+            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .active-sentence {
+            background: linear-gradient(90deg, rgba(79, 70, 229, 0.1) 0%, transparent 100%);
+            border-left: 3px solid #4F46E5;
+        }
+        .mastered-badge {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col" x-data="{ 
+    isPaused: true, 
+    autoPause: true, 
+    isLooping: false,
+    isRecording: false,
+    activeIndex: 1,
+    sentences: [
+        { id: 0, text: 'Hello everyone, welcome back to the channel.', reps: 100, mastered: true },
+        { id: 1, text: 'Today we are going to learn about shadowing techniques.', reps: 42, mastered: false },
+        { id: 2, text: 'Shadowing is one of the most effective ways to improve fluency.', reps: 5, mastered: false },
+        { id: 3, text: 'But you need to be consistent and repeat at least 100 times.', reps: 0, mastered: false },
+        { id: 4, text: 'Let\'s start with this simple sentence right now.', reps: 0, mastered: false }
+    ],
+    record() {
+        this.isRecording = !this.isRecording;
+        if (!this.isRecording) {
+            this.sentences[this.activeIndex].reps++;
+            if (this.sentences[this.activeIndex].reps >= 100) this.sentences[this.activeIndex].mastered = true;
+        }
+    }
+}">
+
+    <!-- Top Bar -->
+    <header class="h-16 border-bottom border-white/5 flex items-center justify-between px-6 bg-background-main/50 backdrop-blur-md z-10">
+        <div class="flex items-center gap-4">
+            <a href="index.html" class="text-gray-400 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            </a>
+            <h2 class="font-heading font-bold text-xl">How to Shadow <span class="text-gray-500 font-normal text-sm ml-2">by English Mastery</span></h2>
+        </div>
+
+        <div class="flex-1 max-w-md mx-8">
+            <div class="flex items-center justify-between text-xs text-gray-400 mb-1">
+                <span>Course Progress</span>
+                <span>35% Mastered</span>
+            </div>
+            <div class="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                <div class="h-full bg-primary-500 w-[35%] transition-all duration-500"></div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 bg-secondary-500/10 text-secondary-500 px-3 py-1.5 rounded-full text-sm font-bold">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" /></svg>
+                42 Mastered
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex overflow-hidden">
+        
+        <!-- Video Section (60%) -->
+        <section class="flex-[3] relative bg-black flex flex-col">
+            <div class="flex-1 relative group bg-[#000]">
+                <!-- Mockup Video Area -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1974&auto=format&fit=crop" class="w-full h-full object-cover opacity-60">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    
+                    <!-- Caption Overlay -->
+                    <div class="absolute bottom-16 left-0 right-0 px-12 text-center pointer-events-none">
+                        <p class="text-3xl font-bold bg-black/60 backdrop-blur-md inline-block px-4 py-2 rounded-lg leading-relaxed shadow-xl border border-white/10">
+                            Today we are going to learn about <span class="text-primary-500">shadowing techniques.</span>
+                        </p>
+                    </div>
+
+                    <!-- Big Play Icon (Hidden when playing) -->
+                    <button class="w-20 h-20 bg-primary-500 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform active:scale-95" x-show="isPaused">
+                        <svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                    </button>
+                </div>
+
+                <!-- Control Bar -->
+                <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black to-transparent flex items-center justify-between px-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div class="flex items-center gap-6">
+                        <button class="text-white hover:text-primary-500">
+                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                        </button>
+                        <div class="text-sm font-mono tracking-tighter">00:42 / 12:04</div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="flex bg-white/10 rounded-lg p-1 text-[10px] font-bold">
+                            <button class="px-2 py-1 rounded hover:bg-white/10">0.75x</button>
+                            <button class="px-2 py-1 rounded bg-primary-500">1.0x</button>
+                            <button class="px-2 py-1 rounded hover:bg-white/10">1.25x</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shadowing Controls -->
+            <div class="h-24 glass-panel border-t border-white/5 flex items-center justify-between px-8 bg-background-main">
+                <div class="flex items-center gap-8">
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <div class="relative w-12 h-6 bg-white/10 rounded-full transition-colors group-hover:bg-white/20" :class="autoPause && 'bg-primary-500/50'">
+                            <div class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform" :class="autoPause && 'translate-x-6 bg-primary-500'"></div>
+                        </div>
+                        <input type="checkbox" x-model="autoPause" class="hidden">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold">Auto-pause</span>
+                            <span class="text-[10px] text-gray-500">Stop after every sentence</span>
+                        </div>
+                    </label>
+
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <div class="relative w-12 h-6 bg-white/10 rounded-full transition-colors group-hover:bg-white/20" :class="isLooping && 'bg-primary-500/50'">
+                            <div class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform" :class="isLooping && 'translate-x-6 bg-primary-500'"></div>
+                        </div>
+                        <input type="checkbox" x-model="isLooping" class="hidden">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold">Repeat Mode</span>
+                            <span class="text-[10px] text-gray-500">Loop active sentence</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <button 
+                        class="flex flex-col items-center justify-center w-40 h-16 rounded-2xl transition-all relative overflow-hidden group shadow-xl"
+                        :class="isRecording ? 'bg-red-500 shadow-red-500/30' : 'bg-primary-500 shadow-primary-500/30'"
+                        @click="record()"
+                    >
+                        <div class="flex items-center gap-2 font-bold uppercase tracking-widest text-xs">
+                            <div class="w-2 h-2 rounded-full bg-white animate-pulse" x-show="isRecording"></div>
+                            <span x-text="isRecording ? 'Stop Recording' : 'Start Shadowing'"></span>
+                        </div>
+                        <span class="text-[9px] opacity-70 mt-1">Press <kbd class="px-1.5 py-0.5 bg-black/20 rounded border border-white/10 mx-1">R</kbd> to toggle</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Transcript Sidebar (40%) -->
+        <aside class="flex-[2] glass-panel flex flex-col">
+            <div class="p-6 border-b border-white/5 flex justify-between items-center">
+                <h3 class="font-heading font-bold text-lg">Transcript</h3>
+                <div class="flex bg-white/5 rounded-lg p-1 gap-1">
+                    <button class="px-2 py-1 text-[10px] font-bold bg-white/10 rounded">EN</button>
+                    <button class="px-2 py-1 text-[10px] font-bold text-gray-500">VN</button>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto custom-scrollbar">
+                <div class="flex flex-col">
+                    <template x-for="(s, index) in sentences" :key="s.id">
+                        <div 
+                            class="p-6 cursor-pointer border-b border-white/5 transition-all relative group"
+                            :class="activeIndex === index ? 'active-sentence' : 'hover:bg-white/5'"
+                            @click="activeIndex = index"
+                        >
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-[10px] font-mono text-gray-500">SENTENCE #0<span x-text="index+1"></span></span>
+                                <div x-show="s.mastered" class="mastered-badge text-[8px] font-bold uppercase px-2 py-0.5 rounded-full text-white">Mastered</div>
+                            </div>
+                            
+                            <p class="text-lg leading-relaxed mb-3" :class="activeIndex === index ? 'text-white' : 'text-gray-400'">
+                                <span x-text="s.text"></span>
+                            </p>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="text-[10px] font-bold uppercase tracking-tight" :class="s.reps >= 100 ? 'text-secondary-500' : 'text-gray-500'">
+                                        Reps: <span class="text-base ml-1" x-text="s.reps"></span> <span class="opacity-50">/ 100</span>
+                                    </div>
+                                    <div class="h-1 w-24 bg-white/5 rounded-full overflow-hidden">
+                                        <div class="h-full bg-secondary-500 transition-all duration-500" :style="`width: ${Math.min(s.reps, 100)}%`"></div>
+                                    </div>
+                                </div>
+                                
+                                <button class="p-2 rounded-lg bg-white/5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary-500">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </aside>
+
+    </main>
+
+</body>
+</html>
