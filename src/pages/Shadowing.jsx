@@ -9,18 +9,18 @@ export default function Shadowing() {
   const [autoPause, setAutoPause] = useState(false);
   const [isLooping, setIsLooping] = useState(false);
   const [autoPlayRecord, setAutoPlayRecord] = useState(true);
-
+  
   // User defined segments
   const [segments, setSegments] = useState([]);
   const [repCounts, setRepCounts] = useState({});
   const [recordCounts, setRecordCounts] = useState({});
   const [recordUrls, setRecordUrls] = useState({});
-
+  
   // Recording state
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
-
+  
   const playerRef = useRef(null);
 
   // Load data from LocalStorage
@@ -37,7 +37,7 @@ export default function Shadowing() {
       } else {
         setSegments([]);
       }
-
+      
       const savedReps = localStorage.getItem(`reps_${videoId}`);
       if (savedReps) {
         try {
@@ -101,7 +101,7 @@ export default function Shadowing() {
       id: Date.now(),
       start,
       end,
-      text: ''
+      text: '' 
     };
     const updated = [...segments, newSegment].sort((a, b) => a.start - b.start);
     setSegments(updated);
@@ -114,7 +114,7 @@ export default function Shadowing() {
       id: Date.now(),
       start,
       end,
-      text: ''
+      text: '' 
     };
     const updated = [...segments, newSegment].sort((a, b) => a.start - b.start);
     setSegments(updated);
@@ -130,7 +130,7 @@ export default function Shadowing() {
 
   const handleTimeUpdate = useCallback((time) => {
     setCurrentTime(time);
-
+    
     // Find active segment
     const index = segments.findIndex(s => time >= s.start && time < s.end);
     if (index !== -1 && index !== activeIndex) {
@@ -139,11 +139,11 @@ export default function Shadowing() {
 
     if (activeIndex !== -1) {
       const segment = segments[activeIndex];
-
+      
       if (autoPause && time >= segment.end && !isLooping) {
         playerRef.current?.pauseVideo();
       }
-
+      
       if (isLooping && time >= segment.end) {
         playerRef.current?.seekTo(segment.start);
       }
@@ -175,17 +175,17 @@ export default function Shadowing() {
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
         const audioUrl = URL.createObjectURL(audioBlob);
-
+        
         if (activeIndex !== -1) {
           const segId = segments[activeIndex].id;
-
+          
           // Store the URL for playback
           setRecordUrls(prev => ({ ...prev, [segId]: audioUrl }));
-
+          
           // Auto-play if enabled
           if (autoPlayRecord) {
-            const audio = new Audio(audioUrl);
-            audio.play();
+             const audio = new Audio(audioUrl);
+             audio.play();
           }
 
           // Increment record count
@@ -274,8 +274,8 @@ export default function Shadowing() {
             Nhập link video và tự tạo lộ trình luyện nghe/nói của riêng bạn.
           </p>
           <div style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', gap: '1rem' }}>
-            <input
-              type="text"
+            <input 
+              type="text" 
               placeholder="Dán link YouTube tại đây..."
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
@@ -286,85 +286,85 @@ export default function Shadowing() {
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1.2fr', gap: '2rem', height: 'calc(100vh - 180px)' }}>
-
+          
           {/* LEFT: Player & Controls */}
           <div className="glass-card" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <ShadowingPlayer ref={playerRef} videoId={videoId} onTimeUpdate={handleTimeUpdate} />
-
+            
             <div className="glass-card" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.03)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <button className="btn-secondary" onClick={() => setVideoId(null)}>← Đổi video</button>
-                <button className="btn-primary" onClick={addSegment} style={{ background: '#10B981', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  ➕ Thêm đoạn 5s (từ {currentTime.toFixed(0)}s)
-                </button>
-              </div>
+               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <button className="btn-secondary" onClick={() => setVideoId(null)}>← Đổi video</button>
+                  <button className="btn-primary" onClick={addSegment} style={{ background: '#10B981', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    ➕ Thêm đoạn 5s (từ {currentTime.toFixed(0)}s)
+                  </button>
+               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <input type="checkbox" id="auto-pause" checked={autoPause} onChange={(e) => setAutoPause(e.target.checked)} />
-                  <label htmlFor="auto-pause" style={{ fontSize: '0.8rem' }}>Tự dừng sau mỗi câu</label>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <input type="checkbox" id="loop" checked={isLooping} onChange={(e) => setIsLooping(e.target.checked)} />
-                  <label htmlFor="loop" style={{ fontSize: '0.8rem' }}>Lặp lại câu</label>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <input type="checkbox" id="auto-play-record" checked={autoPlayRecord} onChange={(e) => setAutoPlayRecord(e.target.checked)} />
-                  <label htmlFor="auto-play-record" style={{ fontSize: '0.8rem' }}>Tự phát lại bản ghi</label>
-                </div>
-                <button
-                  onClick={isRecording ? stopRecording : startRecording}
-                  style={{
-                    padding: '0.6rem',
-                    borderRadius: '8px',
-                    background: isRecording ? '#EF4444' : '#4F46E5',
-                    color: 'white',
-                    fontWeight: 'bold',
-                    border: 'none',
-                    boxShadow: isRecording ? '0 0 15px rgba(239, 68, 68, 0.4)' : 'none'
-                  }}
-                >
-                  {isRecording ? '⏹ Dừng ghi âm' : '⏺ Ghi âm (Record)'}
-                </button>
-              </div>
+               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                     <input type="checkbox" id="auto-pause" checked={autoPause} onChange={(e) => setAutoPause(e.target.checked)}/>
+                     <label htmlFor="auto-pause" style={{ fontSize: '0.8rem' }}>Tự dừng sau mỗi câu</label>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                     <input type="checkbox" id="loop" checked={isLooping} onChange={(e) => setIsLooping(e.target.checked)}/>
+                     <label htmlFor="loop" style={{ fontSize: '0.8rem' }}>Lặp lại câu</label>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                     <input type="checkbox" id="auto-play-record" checked={autoPlayRecord} onChange={(e) => setAutoPlayRecord(e.target.checked)}/>
+                     <label htmlFor="auto-play-record" style={{ fontSize: '0.8rem' }}>Tự phát lại bản ghi</label>
+                  </div>
+                  <button 
+                    onClick={isRecording ? stopRecording : startRecording}
+                    style={{ 
+                      padding: '0.6rem', 
+                      borderRadius: '8px', 
+                      background: isRecording ? '#EF4444' : '#4F46E5', 
+                      color: 'white', 
+                      fontWeight: 'bold',
+                      border: 'none',
+                      boxShadow: isRecording ? '0 0 15px rgba(239, 68, 68, 0.4)' : 'none'
+                    }}
+                  >
+                    {isRecording ? '⏹ Dừng ghi âm' : '⏺ Ghi âm (Record)'}
+                  </button>
+               </div>
             </div>
-
+            
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', fontStyle: 'italic' }}>
-                Mẹo: Hãy nghe kỹ và gõ lại nội dung vào các khung bên phải để luyện nghe.
-              </p>
+                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', fontStyle: 'italic' }}>
+                   Mẹo: Hãy nghe kỹ và gõ lại nội dung vào các khung bên phải để luyện nghe.
+                </p>
             </div>
           </div>
 
           {/* RIGHT: Dynamic Transcript Builder */}
           <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <div style={{ padding: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', display: 'flex', justifyContent: 'space-between' }}>
-              <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Nội dung bạn nghe được</h3>
-              <span style={{ fontSize: '0.8rem', color: '#10B981' }}>{segments.length} đoạn đã tạo</span>
-            </div>
-
-            <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }} className="custom-scrollbar">
-              {segments.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'rgba(255,255,255,0.3)' }}>
-                  <p>Chưa có đoạn nào. Nhấn "Thêm đoạn 5s" để bắt đầu luyện tập.</p>
-                </div>
-              ) : (
-                segments.map((s, index) => (
-                  <SegmentItem
-                    key={s.id}
-                    segment={s}
-                    index={index}
-                    isActive={activeIndex === index}
-                    recordCount={recordCounts[s.id] || 0}
-                    recordUrl={recordUrls[s.id]}
-                    onUpdate={updateSegment}
-                    onDelete={deleteSegment}
-                    onSeek={() => seekToSegment(index)}
-                    onPlay={() => playRecording(s.id)}
-                  />
-                ))
-              )}
-            </div>
+             <div style={{ padding: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', display: 'flex', justifyContent: 'space-between' }}>
+                <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Nội dung bạn nghe được</h3>
+                <span style={{ fontSize: '0.8rem', color: '#10B981' }}>{segments.length} đoạn đã tạo</span>
+             </div>
+             
+             <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }} className="custom-scrollbar">
+                {segments.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'rgba(255,255,255,0.3)' }}>
+                    <p>Chưa có đoạn nào. Nhấn "Thêm đoạn 5s" để bắt đầu luyện tập.</p>
+                  </div>
+                ) : (
+                  segments.map((s, index) => (
+                    <SegmentItem 
+                      key={s.id}
+                      segment={s}
+                      index={index}
+                      isActive={activeIndex === index}
+                      recordCount={recordCounts[s.id] || 0}
+                      recordUrl={recordUrls[s.id]}
+                      onUpdate={updateSegment}
+                      onDelete={deleteSegment}
+                      onSeek={() => seekToSegment(index)}
+                      onPlay={() => playRecording(s.id)}
+                    />
+                  ))
+                )}
+             </div>
           </div>
         </div>
       )}
@@ -390,7 +390,7 @@ function SegmentItem({ segment, index, isActive, recordCount, recordUrl, onUpdat
   };
 
   return (
-    <div
+    <div 
       id={`sentence-${index}`}
       style={{
         padding: '1.2rem',
@@ -402,16 +402,16 @@ function SegmentItem({ segment, index, isActive, recordCount, recordUrl, onUpdat
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem' }}>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <button onClick={onSeek} style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.7rem' }}>Nghe lại</button>
-          <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
-            {segment.start}s - {segment.end}s
-          </span>
-        </div>
-        <button onClick={() => onDelete(segment.id)} style={{ color: '#EF4444', fontSize: '0.8rem', background: 'none', border: 'none' }}>Xóa</button>
+         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <button onClick={onSeek} style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.7rem' }}>Nghe lại</button>
+            <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
+               {segment.start}s - {segment.end}s
+            </span>
+         </div>
+         <button onClick={() => onDelete(segment.id)} style={{ color: '#EF4444', fontSize: '0.8rem', background: 'none', border: 'none' }}>Xóa</button>
       </div>
 
-      <textarea
+      <textarea 
         placeholder="Hãy nghe và gõ nội dung vào đây..."
         value={localText}
         onChange={(e) => {
@@ -433,29 +433,29 @@ function SegmentItem({ segment, index, isActive, recordCount, recordUrl, onUpdat
       />
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.8rem' }}>
-          <span style={{ color: '#10B981', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            🎙 Đã ghi âm: <b>{recordCount}</b> lần
-            {recordUrl && (
-              <button
-                onClick={(e) => { e.stopPropagation(); onPlay(); }}
-                style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981', border: 'none', padding: '0.1rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-              >
-                ▶ Nghe giọng mình
-              </button>
+         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.8rem' }}>
+            <span style={{ color: '#10B981', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+               🎙 Đã ghi âm: <b>{recordCount}</b> lần
+               {recordUrl && (
+                 <button 
+                   onClick={(e) => { e.stopPropagation(); onPlay(); }}
+                   style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981', border: 'none', padding: '0.1rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                 >
+                   ▶ Nghe giọng mình
+                 </button>
+               )}
+            </span>
+            {isActive && (
+              <span className="fade-in" style={{ color: '#4F46E5', fontWeight: 'bold' }}>● ĐANG LUYỆN TẬP</span>
             )}
-          </span>
-          {isActive && (
-            <span className="fade-in" style={{ color: '#4F46E5', fontWeight: 'bold' }}>● ĐANG LUYỆN TẬP</span>
-          )}
-        </div>
-        <button
-          onClick={handleSubmit}
-          className="btn-primary"
-          style={{ padding: '0.4rem 1rem', fontSize: '0.8rem', background: isSubmitted ? '#10B981' : '#4F46E5' }}
-        >
-          {isSubmitted ? '✓ Đã lưu & Quay lại' : 'Xác nhận & Tập câu này'}
-        </button>
+         </div>
+         <button 
+           onClick={handleSubmit} 
+           className="btn-primary" 
+           style={{ padding: '0.4rem 1rem', fontSize: '0.8rem', background: isSubmitted ? '#10B981' : '#4F46E5' }}
+         >
+           {isSubmitted ? '✓ Đã lưu & Quay lại' : 'Xác nhận & Tập câu này'}
+         </button>
       </div>
     </div>
   );
