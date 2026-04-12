@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import Lesson from './pages/Lesson';
 import Writing from './pages/Writing';
 import Shadowing from './pages/Shadowing';
+import Anki from './pages/Anki';
 
 function App() {
   return (
@@ -19,8 +20,11 @@ function App() {
             <Link to="/writing" className="btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
               Luyện dịch
             </Link>
-            <Link to="/shadowing" className="btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+            <Link to="/shadowing" className="btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
               Shadowing
+            </Link>
+            <Link to="/anki" className="btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+              Học Anki
             </Link>
           </div>
         </div>
@@ -32,6 +36,7 @@ function App() {
           <Route path="/lesson" element={<Lesson />} />
           <Route path="/writing" element={<Writing />} />
           <Route path="/shadowing" element={<Shadowing />} />
+          <Route path="/anki" element={<Anki />} />
         </Routes>
       </main>
     </>
